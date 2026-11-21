@@ -3,10 +3,19 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
-const connectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
+const rawConnectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
+const connectionUrl = rawConnectionUrl
+    ? rawConnectionUrl.replace(/[?&]ssl-mode=[^&]+/i, '')
+    : null;
 
 const mysqlPool = connectionUrl
-    ? mysql.createPool(connectionUrl)
+    ? mysql.createPool({
+          uri: connectionUrl,
+          ssl: rawConnectionUrl.includes('ssl') ? { rejectUnauthorized: false } : undefined,
+          waitForConnections: true,
+          connectionLimit: 10,
+          queueLimit: 0
+      })
     : mysql.createPool({
           host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
           port: Number(process.env.DB_PORT || process.env.MYSQLPORT || 3306),

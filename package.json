@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Lanzador principal para la plataforma Guzmán Studio",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "postinstall": "npm --prefix \"app capacita/backend\" install && npm --prefix \"app capacita/frontend\" install && npm --prefix \"app capacita/frontend\" run build",
     "dev": "npm --prefix \"app capacita\" run dev",
