@@ -14,7 +14,7 @@ const getMyProgress = async (req, res) => {
         const daysSinceCreation = Math.floor((currentDate - createdDate) / (1000 * 60 * 60 * 24));
 
         // Obtener niveles
-        const [levels] = await pool.query('SELECT * FROM levels WHERE target_role IN (?, "both") ORDER BY order_num ASC', [req.user.role]);
+        const [levels] = await pool.query("SELECT * FROM levels WHERE target_role IN (?, 'both') ORDER BY order_num ASC", [req.user.role]);
 
         const progress = levels.map(level => {
             const isUnlocked = daysSinceCreation >= level.unlock_days;

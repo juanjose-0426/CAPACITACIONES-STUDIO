@@ -9,7 +9,7 @@ const getLevels = async (req, res) => {
         let params = [];
         
         if (req.user.role !== 'admin') {
-            query = 'SELECT * FROM levels WHERE target_role IN (?, "both") ORDER BY order_num ASC';
+            query = "SELECT * FROM levels WHERE target_role IN (?, 'both') ORDER BY order_num ASC";
             params = [req.user.role];
         }
 

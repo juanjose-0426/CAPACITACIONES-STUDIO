@@ -15,15 +15,26 @@ const generateToken = (id, role) => {
 // @access  Public
 const login = async (req, res) => {
     const { email, password } = req.body || {};
-    const cleanEmail = typeof email === 'string' ? email.trim() : '';
+    const cleanEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const cleanPassword = typeof password === 'string' ? password.trim() : '';
 
-    if (!cleanEmail || !password) {
+    if (!cleanEmail || !cleanPassword) {
         return res.status(400).json({ message: 'Por favor ingresa tu correo y contraseña' });
     }
 
     try {
-        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [cleanEmail]);
+        let [rows] = await pool.query('SELECT * FROM users WHERE LOWER(email) = ?', [cleanEmail]);
         
+        // Auto-crear admin por defecto si la base de datos está recién creada y aún no existe admin@admin.com
+        if (rows.length === 0 && cleanEmail === 'admin@admin.com') {
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            await pool.query(
+                "INSERT INTO users (name, email, password, role, is_active) VALUES ('Administrador', 'admin@admin.com', ?, 'admin', 1)",
+                [hashedPassword]
+            );
+            [rows] = await pool.query('SELECT * FROM users WHERE LOWER(email) = ?', [cleanEmail]);
+        }
+
         if (rows.length === 0) {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
@@ -34,7 +45,7 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'La cuenta está desactivada' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(cleanPassword, user.password);
 
         if (isMatch) {
             res.json({

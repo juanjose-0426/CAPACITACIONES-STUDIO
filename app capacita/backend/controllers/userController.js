@@ -6,7 +6,7 @@ const pool = require('../db');
 // @access  Private/Admin
 const getUsers = async (req, res) => {
     try {
-        const [users] = await pool.query('SELECT id, name, email, role, is_active, created_at FROM users WHERE role IN ("model", "monitor") ORDER BY created_at DESC');
+        const [users] = await pool.query("SELECT id, name, email, role, is_active, created_at FROM users WHERE role IN ('model', 'monitor') ORDER BY created_at DESC");
         res.json(users);
     } catch (error) {
         console.error(error);
@@ -55,7 +55,7 @@ const updateUser = async (req, res) => {
     
     try {
         const [result] = await pool.query(
-            'UPDATE users SET is_active = ? WHERE id = ? AND role IN ("model", "monitor")',
+            "UPDATE users SET is_active = ? WHERE id = ? AND role IN ('model', 'monitor')",
             [is_active !== undefined ? is_active : 1, req.params.id]
         );
 
@@ -75,7 +75,7 @@ const updateUser = async (req, res) => {
 // @access  Private/Admin
 const deleteUser = async (req, res) => {
     try {
-        const [result] = await pool.query('DELETE FROM users WHERE id = ? AND role IN ("model", "monitor")', [req.params.id]);
+        const [result] = await pool.query("DELETE FROM users WHERE id = ? AND role IN ('model', 'monitor')", [req.params.id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Usuario no encontrado' });

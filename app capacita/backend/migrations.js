@@ -119,12 +119,12 @@ async function runMigrations() {
         `);
 
         // Crear usuario administrador por defecto si no hay ninguno
-        const [existingAdmins] = await pool.query('SELECT id FROM users WHERE role = "admin" LIMIT 1');
+        const [existingAdmins] = await pool.query("SELECT id FROM users WHERE role = 'admin' OR email = 'admin@admin.com' LIMIT 1");
         if (existingAdmins.length === 0) {
             const hashedPassword = await bcrypt.hash('admin123', 10);
             await pool.query(`
-                INSERT INTO users (name, email, password, role) 
-                VALUES ('Administrador', 'admin@admin.com', ?, 'admin')
+                INSERT INTO users (name, email, password, role, is_active) 
+                VALUES ('Administrador', 'admin@admin.com', ?, 'admin', 1)
             `, [hashedPassword]);
             console.log('[Database] Usuario administrador creado por defecto: admin@admin.com / admin123');
         }
