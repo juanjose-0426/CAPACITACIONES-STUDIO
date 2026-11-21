@@ -20,15 +20,14 @@ async function runMigrations() {
             await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
             console.log(`[Database] Base de datos "${dbName}" lista.`);
         } catch (err) {
-            if (err.code === 'ECONNREFUSED') {
-                console.warn('\n⚠️  [MySQL] No se pudo conectar a MySQL (Conexión rechazada).');
-                console.warn('👉 Asegúrate de tener iniciado MySQL o configuradas las variables de entorno.\n');
-                return;
-            } else if (err.code === 'ER_ACCESS_DENIED_ERROR') {
+            if (err.code === 'ER_ACCESS_DENIED_ERROR') {
                 console.warn('\n⚠️  [MySQL] Acceso denegado (usuario o contraseña de MySQL incorrectos).\n');
                 return;
             }
-            console.warn('[Database] Advertencia al verificar base de datos:', err.code || err.message);
+            console.log('[Database] MySQL no detectado en este entorno; activando base de datos integrada (SQLite)...');
+            if (typeof pool.enableSqliteFallback === 'function') {
+                pool.enableSqliteFallback();
+            }
         } finally {
             if (rootConn) {
                 try { await rootConn.end(); } catch (e) {}
