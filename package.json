@@ -1,0 +1,15 @@
+{
+  "name": "app-capacita-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lanzador principal para la plataforma Guzmán Studio",
+  "scripts": {
+    "postinstall": "npm --prefix \"app capacita/backend\" install && npm --prefix \"app capacita/frontend\" install && npm --prefix \"app capacita/frontend\" run build",
+    "dev": "npm --prefix \"app capacita\" run dev",
+    "start": "node \"app capacita/backend/server.js\"",
+    "backend": "npm --prefix \"app capacita/backend\" run dev",
+    "frontend": "npm --prefix \"app capacita/frontend\" run dev",
+    "build": "npm --prefix \"app capacita/frontend\" run build"
+  }
+}
+
